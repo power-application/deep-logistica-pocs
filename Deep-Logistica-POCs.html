@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Logística — Portfólio de POCs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  /* Deep Logística ocean-teal + green→cyan gradient brand mapped onto shared variable names */
+  --navy-950:#052833; --navy-900:#083a48; --navy-800:#0c4f5c; --navy-700:#106574;
+  --navy-600:#177f88; --blue-500:#1f9fb0; --blue-400:#3cbcc9; --blue-300:#8ad9df;
+  --green:#2fb457; --green-600:#1f9a45; --green-200:#bfe9cf;
+  --warn:#f5a524; --danger:#ef4d57; --ok:#1fae6a;
+  --bg:#eef3f3; --card:#ffffff; --ink:#0d2429; --muted:#5b7378; --line:#e2ecec;
+  --ring:rgba(47,180,87,.4);
+  --shadow:0 10px 30px -12px rgba(5,40,51,.30);
+  --shadow-sm:0 4px 14px -8px rgba(5,40,51,.26);
+  --grad:linear-gradient(120deg,#2fb457,#1f9fb0);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);
+  background:
+    radial-gradient(900px 500px at 100% -5%,rgba(47,180,87,.10),transparent 60%),
+    radial-gradient(800px 600px at -10% 110%,rgba(31,159,176,.14),transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+.app{display:flex;min-height:100vh}
+h1,h2,h3,h4,.val,.brand b{font-family:'Manrope','Inter',sans-serif}
+
+/* Sidebar */
+.side{width:288px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:linear-gradient(170deg,var(--navy-950),var(--navy-800) 60%,var(--navy-700));
+  color:#c6e0e2;border-right:1px solid rgba(255,255,255,.06);}
+.side::-webkit-scrollbar{width:7px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:8px}
+.brand{padding:24px 22px 12px}
+.logo{display:block}
+.logo svg{width:100%;max-width:200px;height:auto;display:block}
+.brandsub{padding:8px 22px 14px;color:#8ab6b8;font-size:11px;line-height:1.4;border-bottom:1px solid rgba(255,255,255,.10)}
+.navgroup{padding:8px 16px 2px}
+.navgroup h4{margin:14px 0 8px;padding:0 10px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#79a9ab;font-weight:700}
+.nav a{display:flex;gap:11px;align-items:center;padding:10px 12px;border-radius:11px;font-size:13.5px;
+  color:#b3d2d4;cursor:pointer;transition:.18s ease;position:relative;font-weight:500;}
+.nav a .ico{width:22px;text-align:center;font-size:15px}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff;transform:translateX(2px)}
+.nav a.active{background:linear-gradient(90deg,rgba(47,180,87,.24),rgba(31,159,176,.10));
+  color:#fff;font-weight:700;box-shadow:inset 0 0 0 1px rgba(47,180,87,.34);}
+.nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--green)}
+.side .foot{padding:18px 22px 26px;color:#79a9ab;font-size:11px;line-height:1.5}
+
+/* Main */
+.main{flex:1;min-width:0}
+.topbar{backdrop-filter:saturate(160%) blur(10px);background:rgba(255,255,255,.8);border-bottom:1px solid var(--line);
+  padding:15px 34px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;}
+.topbar .crumb{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.topbar h2{margin:3px 0 0;font-size:20px;letter-spacing:-.3px}
+.pill{font-size:11px;padding:6px 13px;border-radius:999px;font-weight:700}
+.tag-poc{background:linear-gradient(135deg,rgba(47,180,87,.16),rgba(31,159,176,.10));color:#178a54;box-shadow:inset 0 0 0 1px rgba(47,180,87,.34)}
+.content{padding:30px 34px 70px;max-width:1220px;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.lead{color:var(--muted);font-size:14.5px;max-width:840px;line-height:1.6;margin:0 0 24px}
+.lead b{color:var(--navy-700)}
+.dashtag{display:inline-block;font-size:11px;font-weight:700;color:#178a54;background:rgba(47,180,87,.14);padding:4px 11px;border-radius:999px;margin-bottom:10px;letter-spacing:.04em}
+
+/* grid / cards */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:980px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:14.5px;letter-spacing:-.2px}
+.card .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+.kpi{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow-sm);transition:.2s;}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi .lab{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.kpi .delta{font-size:12px;font-weight:700;margin-top:5px}
+.up{color:var(--ok)}.down{color:var(--danger)}.flat{color:var(--muted)}
+.bar-top{height:4px;border-radius:6px;margin:-20px -20px 16px;background:var(--grad)}
+canvas{max-width:100%}
+.chartbox{height:262px;position:relative}.chartbox.sm{height:202px}.chartbox.lg{height:300px}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+tbody tr{transition:.15s}tbody tr:hover{background:#f4faf9}
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block}
+.b-ok{background:#e4f6ec;color:#0f7a45}.b-warn{background:#fdf0db;color:#b9770a}.b-bad{background:#fdeaec;color:#cf2436}.b-info{background:#e4f2f4;color:#127a86}
+
+/* innovative components */
+.gauge{position:relative;width:180px;height:180px;margin:0 auto}
+.gauge .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .lbl b{font-family:'Manrope';font-size:32px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.gauge .lbl span{font-size:11px;color:var(--muted);margin-top:4px}
+.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:780px){.rings{grid-template-columns:repeat(2,1fr)}}
+.ring{text-align:center}
+.ring .circ{width:118px;height:118px;border-radius:50%;margin:0 auto;display:grid;place-items:center;position:relative}
+.ring .circ::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--card)}
+.ring .circ b{position:relative;font-family:'Manrope';font-size:22px}
+.ring .nm{font-size:12px;color:var(--muted);margin-top:10px;font-weight:600}
+.ring .dl{font-size:11px;font-weight:700;margin-top:2px}
+.minirings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.heat{display:grid;gap:6px;font-size:12px}
+.heat .hrow{display:grid;grid-template-columns:170px repeat(5,1fr);gap:6px;align-items:center}
+.heat .hh{font-size:10px;color:var(--muted);font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.02em}
+.heat .hl{font-size:12px;font-weight:600;color:var(--navy-700)}
+.cell{height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;transition:transform .15s}
+.cell:hover{transform:scale(1.08);box-shadow:var(--shadow)}
+.c0{background:#e2ecec;color:var(--muted)}
+.c1{background:#1fae6a}.c2{background:#3cbcc9;color:#04303a}.c3{background:#f5a524}.c4{background:#ef4d57}
+.heatleg{display:flex;gap:14px;margin-top:14px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:middle}
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:980px){.kanban{grid-template-columns:1fr 1fr}}
+.kcol{background:#f3f7f7;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:240px}
+.kcol .kh{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:10px;color:var(--navy-700)}
+.kcol .kh .cnt{background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:11px}
+.kdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:9px;box-shadow:var(--shadow-sm);border-left:3px solid var(--blue-400)}
+.kcard.cr{border-left-color:var(--danger)}.kcard.wn{border-left-color:var(--warn)}.kcard.ok{border-left-color:var(--ok)}
+.kcard .kt{font-size:12px;font-weight:700}
+.kcard .km{font-size:10.5px;color:var(--muted);margin-top:3px}
+.kcard .kf{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--muted)}
+.av{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue-500));color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.funnel{display:flex;flex-direction:column;align-items:center;gap:7px;padding:6px 0}
+.fstage{color:#fff;border-radius:10px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:700;box-shadow:var(--shadow-sm);transition:transform .15s}
+.fstage:hover{transform:scale(1.02)}
+.fstage small{font-weight:500;opacity:.9;font-size:11px}
+.fstage b{font-family:'Manrope';font-size:16px}
+.dealcard{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+.dealcard .di{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(47,180,87,.16),rgba(31,159,176,.2));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.dealcard .dn{font-size:13px;font-weight:600}.dealcard .ds{font-size:11px;color:var(--muted)}
+.dealcard .dv{margin-left:auto;font-family:'Manrope';font-weight:700;color:var(--navy-700);font-size:14px}
+.twin{position:relative;background:linear-gradient(160deg,#052833,#106574);border-radius:16px;height:330px;overflow:hidden}
+.twin .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}
+.hot{position:absolute;transform:translate(-50%,-50%);cursor:pointer}
+.hot .pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.hot .pin.cr{background:var(--danger);animation:pulse 1.6s infinite}
+.hot .pin.wn{background:var(--warn)}.hot .pin.ok{background:var(--ok)}.hot .pin.hq{background:var(--green)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,77,87,.6)}70%{box-shadow:0 0 0 14px rgba(239,77,87,0)}100%{box-shadow:0 0 0 0 rgba(239,77,87,0)}}
+.hot .tip{position:absolute;left:24px;top:-8px;background:rgba(255,255,255,.96);border-radius:8px;padding:5px 9px;font-size:10.5px;white-space:nowrap;color:var(--navy-800);font-weight:600;box-shadow:var(--shadow)}
+.twin .lbl-eq{position:absolute;color:#bce0e2;font-size:10px;font-weight:600}
+.twinleg{display:flex;gap:16px;margin-top:12px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.spark{display:flex;align-items:flex-end;gap:3px;height:36px}
+.spark i{flex:1;background:linear-gradient(180deg,var(--blue-400),var(--blue-300));border-radius:3px 3px 0 0;min-height:3px}
+.scoretab td{vertical-align:middle}
+.trend-up{color:var(--ok);font-weight:700}.trend-dn{color:var(--danger);font-weight:700}
+
+/* app showcases */
+.applay{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.applay{grid-template-columns:1fr}}
+.maplbl{font-size:10px;fill:#bce0e2;font-weight:600}
+.fmap{position:relative;height:330px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#052833,#106574)}
+.syncrow{display:flex;gap:10px;flex-wrap:wrap}
+.syncpill{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:12px;font-weight:600;box-shadow:var(--shadow-sm)}
+.syncpill .d{width:9px;height:9px;border-radius:50%}
+.statrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.statrow b{font-family:'Manrope';font-size:18px}
+.statrow .sd{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px}
+.tline{position:relative;margin:30px 14px 10px;height:60px}
+.tline .base{height:4px;background:var(--line);border-radius:4px;position:absolute;left:0;right:0;top:7px}
+.tline .fillb{height:4px;border-radius:4px;position:absolute;left:0;top:7px;background:linear-gradient(90deg,var(--danger),var(--warn),var(--ok))}
+.tnode{position:absolute;top:-1px;transform:translateX(-50%);text-align:center;width:88px}
+.tnode .pin{width:18px;height:18px;border-radius:50%;border:3px solid #fff;margin:0 auto;box-shadow:var(--shadow-sm)}
+.tnode .dd{font-size:11px;font-weight:700;margin-top:6px}
+.tnode .cap{font-size:9.5px;color:var(--muted);margin-top:1px;font-weight:600;line-height:1.15}
+.stepper{display:flex;align-items:flex-start;margin:10px 0 4px}
+.snode{flex:1;text-align:center;position:relative}
+.snode .cir{width:34px;height:34px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;position:relative;z-index:2}
+.snode .cir.done{background:var(--ok)}.snode .cir.act{background:var(--blue-500);box-shadow:0 0 0 5px rgba(31,159,176,.18)}.snode .cir.pend{background:#c0d3d3}
+.snode .stx{font-size:10.5px;margin-top:8px;color:var(--navy-700);font-weight:700;line-height:1.2}
+.snode .ssub{font-size:10px;color:var(--muted);margin-top:1px}
+.snode::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:3px;background:var(--line);z-index:1}
+.snode:first-child::before{display:none}
+.snode.fdone::before{background:var(--ok)}
+.xpwrap{display:flex;align-items:center;gap:12px}
+.lvl{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--green),var(--blue-500));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.lvl b{font-family:'Manrope';font-size:17px;line-height:1}.lvl span{font-size:8px;letter-spacing:.08em}
+.xpbar{height:12px;border-radius:999px;background:#e2ecec;overflow:hidden;margin:7px 0 4px}
+.xpbar i{display:block;height:100%;background:var(--grad)}
+.streak{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.streak i{width:21px;height:21px;border-radius:5px;background:#e2ecec}
+.streak i.on{background:linear-gradient(135deg,var(--green),var(--green-600))}
+.streak i.today{outline:2px solid var(--blue-500);outline-offset:1px}
+.badgewall{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px}
+.bdg{text-align:center;background:#f3f7f7;border:1px solid var(--line);border-radius:12px;padding:11px 6px}
+.bdg .ic{font-size:22px}.bdg .bn{font-size:9.5px;color:var(--muted);margin-top:5px;font-weight:600;line-height:1.15}
+.bdg.lock{opacity:.4;filter:grayscale(1)}
+.leader .lr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.leader .rk{width:23px;height:23px;border-radius:50%;background:var(--navy-700);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.leader .rk.g{background:linear-gradient(135deg,#f5a524,#e08600)}
+.leader .lr.me{font-weight:700;color:var(--navy-700)}
+.leader .lr .pts{margin-left:auto;font-weight:700;color:var(--muted)}
+.detview{position:relative;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#052833,#0e4a52);height:300px}
+.detview .gridb{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:30px 30px}
+.bbox{position:absolute;border:2px solid;border-radius:6px}
+.bbox .bl{position:absolute;top:-19px;left:-2px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;color:#04303a;white-space:nowrap}
+.confrow{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.confrow .cn{font-size:12px;width:160px;font-weight:600}
+.confbar{flex:1;height:9px;border-radius:9px;background:#e2ecec;overflow:hidden}
+.confbar i{display:block;height:100%;border-radius:9px}
+.confrow .cv{font-size:11px;font-weight:700;width:46px;text-align:right}
+.pipe{display:flex;align-items:center;flex-wrap:wrap}
+.pstep{flex:1;text-align:center;background:#f3f7f7;border:1px solid var(--line);border-radius:11px;padding:10px 6px;min-width:84px}
+.pstep .pi{font-size:17px}.pstep .pn{font-size:10px;font-weight:700;margin-top:3px;color:var(--navy-700)}
+.parr{color:var(--green-600);font-weight:800;padding:0 6px}
+
+/* personalization extras */
+.certrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.cert{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#fff;background:rgba(47,180,87,.16);border:1px solid rgba(47,180,87,.4);padding:5px 12px;border-radius:999px}
+.livechip{display:inline-flex;align-items:center;font-size:11px;color:var(--muted);font-weight:600}
+.livedot{width:8px;height:8px;border-radius:50%;background:#1fae6a;display:inline-block;margin-right:7px;box-shadow:0 0 0 0 rgba(31,174,106,.6);animation:lp 1.8s infinite}
+@keyframes lp{0%{box-shadow:0 0 0 0 rgba(31,174,106,.5)}70%{box-shadow:0 0 0 8px rgba(31,174,106,0)}100%{box-shadow:0 0 0 0 rgba(31,174,106,0)}}
+.clientwall{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:780px){.clientwall{grid-template-columns:repeat(2,1fr)}}
+.cwall{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#f3f7f7;border:1px solid var(--line);border-radius:12px;padding:14px 8px;font-family:'Manrope';font-weight:700;font-size:12px;color:var(--navy-700);text-align:center;transition:.2s}
+.cwall .ce{font-size:20px}
+.cwall:hover{transform:translateY(-2px);box-shadow:var(--shadow);color:var(--green)}
+.donutwrap{position:relative}
+.donutctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.donutctr b{font-family:'Manrope';font-size:23px;line-height:1}
+.donutctr span{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* phone mockups */
+.phones{display:flex;flex-wrap:wrap;gap:28px}
+.phone{width:300px;flex-shrink:0;border-radius:40px;padding:11px;background:linear-gradient(160deg,#052833,#0c4f5c);
+  box-shadow:0 30px 60px -22px rgba(3,26,33,.6),inset 0 0 0 1px rgba(255,255,255,.06);position:relative;}
+.phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:96px;height:22px;background:#031a21;border-radius:0 0 14px 14px;z-index:5}
+.phone .screen{background:#eef3f3;border-radius:30px;overflow:hidden;height:600px;display:flex;flex-direction:column}
+.ph-status{height:30px;background:linear-gradient(135deg,var(--navy-800),var(--navy-600));color:#fff;font-size:10px;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.ph-head{background:linear-gradient(135deg,var(--navy-800),var(--navy-600));color:#fff;padding:8px 18px 16px;position:relative}
+.ph-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:16px;background:#eef3f3;border-radius:16px 16px 0 0}
+.ph-head .t{font-size:15px;font-weight:700;font-family:'Manrope'}
+.ph-head .s{font-size:11px;color:var(--green-200);margin-top:2px}
+.ph-body{flex:1;overflow-y:auto;padding:14px 14px 18px;background:#eef3f3}
+.ph-body::-webkit-scrollbar{width:0}
+.ph-nav{height:58px;background:#fff;border-top:1px solid var(--line);display:flex;box-shadow:0 -4px 14px -8px rgba(5,40,51,.18)}
+.ph-nav div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:var(--muted);gap:3px;font-weight:600}
+.ph-nav div.on{color:var(--navy-600)}
+.ph-nav .d{font-size:17px}
+.mini{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:11px;box-shadow:var(--shadow-sm)}
+.mini .mt{font-size:13px;font-weight:600}
+.mini .ms{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chk{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.box{width:19px;height:19px;border-radius:6px;border:2px solid var(--blue-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+.box.c{background:var(--ok);border-color:var(--ok)}.box.x{background:var(--danger);border-color:var(--danger)}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--blue-500));color:#fff;border-radius:11px;padding:10px 15px;font-size:12.5px;font-weight:700;text-align:center;box-shadow:0 8px 18px -10px rgba(31,159,176,.7)}
+.btn.full{display:block}
+.btn.acc{background:var(--grad);color:#fff;box-shadow:0 8px 18px -10px rgba(47,180,87,.8)}
+.progress{height:9px;border-radius:9px;background:#e2ecec;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--grad);border-radius:9px}
+.note{font-size:12.5px;color:var(--muted);line-height:1.55}
+.callout{background:linear-gradient(135deg,rgba(47,180,87,.08),rgba(31,159,176,.12));border:1px solid var(--line);border-left:4px solid var(--green);border-radius:12px;padding:12px 15px;font-size:13px;color:var(--navy-700);margin:6px 0 18px;line-height:1.5}
+.feat{display:flex;gap:11px;align-items:flex-start;font-size:13px;margin-bottom:11px;line-height:1.5}
+.feat .fi{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,rgba(47,180,87,.16),rgba(31,159,176,.2));color:var(--navy-700);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+
+/* power platform flow */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.step{background:linear-gradient(180deg,#fff,#f5faf9);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:148px;flex:1;text-align:center;box-shadow:var(--shadow-sm);transition:.2s}
+.step:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.step .si{font-size:22px}.step .sn{font-weight:700;font-size:13px;margin-top:5px;font-family:'Manrope'}.step .sd{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--green-600);font-size:20px;padding:0 8px;font-weight:800}
+@media(max-width:900px){.arrow{transform:rotate(90deg);padding:8px 0}}
+.archlegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:16px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.disc{font-size:11px;color:var(--muted);font-style:italic;margin-top:18px}
+.stack>*+*{margin-top:18px}
+.hero{border-radius:20px;padding:26px 28px;margin-bottom:24px;color:#e6f2f1;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--navy-900),var(--navy-700));box-shadow:var(--shadow);}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(47,180,87,.42),transparent 65%)}
+.hero h1{color:#fff;margin:0 0 8px;font-size:24px;letter-spacing:-.4px}
+.hero p{margin:0;max-width:810px;color:#bcdcda;font-size:14px;line-height:1.6}
+.hero .chips{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.hero .chips span{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">
+      <svg viewBox="0 0 220 70" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2fb457"/><stop offset="1" stop-color="#1f9fb0"/></linearGradient></defs>
+        <circle cx="22" cy="34" r="11" fill="none" stroke="#2fb457" stroke-width="3.5"/>
+        <circle cx="22" cy="34" r="4.5" fill="#2fb457"/>
+        <rect x="33" y="30.5" width="16" height="7" rx="2" fill="#2fb457"/>
+        <text x="54" y="46" font-family="Manrope,Arial" font-weight="800" font-size="40" fill="url(#dg)" letter-spacing="-1">DEEP</text>
+        <text x="56" y="61" font-family="Inter,Arial" font-weight="600" font-size="10" fill="#8ad9df" letter-spacing="5">LOGÍSTICA</text>
+      </svg>
+    </div></div>
+    <div class="brandsub">Logística dedicada e portuária · Portfólio de Provas de Conceito</div>
+    <div class="navgroup"><h4>Aplicativos</h4><div class="nav" id="nav-app"></div></div>
+    <div class="navgroup"><h4>Dashboards (Power BI)</h4><div class="nav" id="nav-dash"></div></div>
+    <div class="navgroup"><h4>Power Platform</h4><div class="nav" id="nav-pp"></div></div>
+    <div class="foot">Power Tech · Power BI &amp; Power Platform · Microsoft 365<br>Dados ilustrativos para demonstração.</div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div><div class="crumb" id="crumb">Início</div><h2 id="title">Portfólio de POCs — Deep Logística</h2></div>
+      <div style="display:flex;align-items:center;gap:14px"><span class="livechip"><span class="livedot"></span>dados em tempo real</span><span class="pill tag-poc" id="pocflag">15 provas de conceito</span></div>
+    </div>
+    <div class="content" id="view"></div>
+  </main>
+</div>
+
+<script>
+const MES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const dp=['#083a48','#0c4f5c','#177f88','#1f9fb0','#3cbcc9','#8ad9df','#2fb457','#bfe9cf'];
+const charts=[];
+function destroyCharts(){while(charts.length){try{charts.pop().destroy()}catch(e){}}}
+function C(id,cfg){const el=document.getElementById(id);if(!el)return;const c=new Chart(el,cfg);charts.push(c);return c;}
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+Chart.defaults.color="#5b7378";
+Chart.defaults.plugins.legend.labels.boxWidth=12;
+Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.font={size:11};
+
+const APPS=[
+ {id:'app1',ico:'📍',name:'Cockpit da Diretoria',crumb:'Aplicativos / Cockpit da Diretoria'},
+ {id:'app2',ico:'📦',name:'Portal do Cliente',crumb:'Aplicativos / Portal do Cliente (embarcador)'},
+ {id:'app3',ico:'🚛',name:'Operação em Campo',crumb:'Aplicativos / Motorista & Operação'},
+ {id:'app4',ico:'🎓',name:'Deep Academy',crumb:'Aplicativos / Deep Academy'},
+ {id:'app5',ico:'🤖',name:'Conferência de Avaria IA',crumb:'Aplicativos / Conferência de Avaria com IA'}];
+const DASH=[
+ {id:'dash1',ico:'🔥',name:'Terminal — Ocupação',crumb:'Dashboards / Terminal Retroportuário — Ocupação'},
+ {id:'dash2',ico:'🚢',name:'Fluxo de Cargas',crumb:'Dashboards / Fluxo de Cargas & Agendamento'},
+ {id:'dash3',ico:'🗓️',name:'Frota & Transferências',crumb:'Dashboards / Frota, Transferências & Fretamento'},
+ {id:'dash4',ico:'💰',name:'Custo & Margem',crumb:'Dashboards / Custo & Margem por Serviço'},
+ {id:'dash5',ico:'📈',name:'Executivo & SGI',crumb:'Dashboards / Executivo & SGI/HSE'}];
+const PP=[
+ {id:'pp1',ico:'📱',name:'Power Apps — Terminal',crumb:'Power Platform / Power Apps'},
+ {id:'pp2',ico:'⚡',name:'Relatório Operacional',crumb:'Power Platform / Power Automate (Relatório)'},
+ {id:'pp3',ico:'🔔',name:'Alertas de Operação',crumb:'Power Platform / Power Automate (Alertas)'},
+ {id:'pp4',ico:'📅',name:'Agendamento & Janelas',crumb:'Power Platform / Power Automate (Agendamento)'},
+ {id:'pp5',ico:'💬',name:'Copiloto de Operações',crumb:'Power Platform / Copilot Studio'}];
+
+function buildNav(){
+  const m=(list,el)=>{document.getElementById(el).innerHTML=list.map(i=>`<a data-id="${i.id}"><span class="ico">${i.ico}</span>${i.name}</a>`).join('')};
+  m(APPS,'nav-app');m(DASH,'nav-dash');m(PP,'nav-pp');
+  document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>go(a.dataset.id));
+}
+function setActive(id){document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.id===id));}
+function meta(id){return [...APPS,...DASH,...PP].find(x=>x.id===id);}
+function kpi(lab,val,delta,cls){return `<div class="kpi"><div class="bar-top"></div><div class="lab">${lab}</div><div class="val">${val}</div><div class="delta ${cls}">${delta}</div></div>`;}
+function phone(title,sub,body,nav){
+  return `<div class="phone"><div class="screen">
+    <div class="ph-status"><span>09:41</span><span>📶 🔋 100%</span></div>
+    <div class="ph-head"><div class="t">${title}</div><div class="s">${sub}</div></div>
+    <div class="ph-body">${body}</div><div class="ph-nav">${nav}</div></div></div>`;
+}
+
+/* ================= APPS ================= */
+function app1(){
+ return `<span class="dashtag">EXPERIÊNCIA · Cockpit da diretoria + mapa da operação</span>
+ <p class="lead">App da diretoria/operações com os indicadores do terminal e da frota no bolso e alertas, e um <b>mapa da operação</b> em Itajaí/SC (terminal retroportuário, porto e rotas de transferência). Decisão sobre pátio, navios e entregas em tempo real.</p>
+ <div class="applay">
+  ${phone('Cockpit Deep','Bom dia 👋 · terminal + frota',
+    `<div class="callout" style="margin:0 0 11px">⚠️ <b>Bloco A</b> do pátio em 96% — risco de congestionamento no gate</div>
+     <div class="grid g2" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px">
+       <div class="kpi" style="padding:12px"><div class="lab">Ocupação do pátio</div><div class="val" style="font-size:21px">84%</div></div>
+       <div class="kpi" style="padding:12px"><div class="lab">OTIF (transferências)</div><div class="val" style="font-size:21px">96,4%</div></div>
+     </div>
+     <div class="mini"><div class="row"><div class="mt">Navio break bulk · atracação</div><span class="badge b-info">14:00</span></div><div class="ms">operação estimada 18h</div></div>
+     <div class="mini"><div class="row"><div class="mt">Agendamentos hoje (gate)</div><span class="badge b-warn">312</span></div><div class="ms">28 fora da janela</div></div>`,
+    `<div class="on"><span class="d">📊</span>Cockpit</div><div><span class="d">🗺️</span>Operação</div><div><span class="d">🔔</span>Alertas</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Mapa da operação · Itajaí/SC</h3><div class="sub">terminal, porto e rotas — passe o mouse</div>
+      <div class="fmap">
+        <svg viewBox="0 0 480 330" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;inset:0">
+          <path d="M60 200 Q140 150 220 170 L470 120 L470 260 Q380 300 260 290 Q140 280 60 240 Z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+          <path d="M470 120 L470 260" stroke="#3cbcc9" stroke-width="3" opacity=".5"/>
+          <text x="452" y="110" class="maplbl" text-anchor="end">Canal / Porto de Itajaí</text>
+          <circle cx="230" cy="200" r="11" fill="#f5a524" stroke="#fff" stroke-width="3"/><text x="230" y="182" class="maplbl" text-anchor="middle">Terminal retroportuário · 84%</text>
+          <circle cx="400" cy="150" r="10" fill="#1fae6a" stroke="#fff" stroke-width="3"/><text x="400" y="134" class="maplbl" text-anchor="middle">Berço · navio break bulk</text>
+          <polyline points="230,200 320,220 400,200" fill="none" stroke="#2fb457" stroke-width="3" stroke-dasharray="7 6"/>
+          <circle cx="320" cy="220" r="7" fill="#2fb457" stroke="#fff" stroke-width="2"/><text x="320" y="242" class="maplbl" text-anchor="middle">Transferência · 12 viagens</text>
+          <circle cx="120" cy="215" r="8" fill="#3cbcc9" stroke="#fff" stroke-width="3"/><text x="120" y="235" class="maplbl" text-anchor="middle">Fretamento · turnos</text>
+        </svg>
+      </div>
+      <div class="twinleg"><span><span class="sw c1"></span>Fluindo</span><span><span class="sw c3"></span>Atenção</span><span><span class="sw c4"></span>Congestionado</span></div>
+    </div>
+    <div class="card"><h3>Atualização & alertas</h3><div class="sub">dados do TOS/terminal, telemetria da frota e agendamento</div>
+      <div class="syncrow">
+        <div class="syncpill"><span class="d" style="background:var(--ok)"></span>Dados em tempo real</div>
+        <div class="syncpill"><span class="d" style="background:var(--warn)"></span>Pátio quase cheio</div>
+        <div class="syncpill"><span class="d" style="background:var(--blue-400)"></span>Push no Teams ativo</div>
+      </div>
+    </div>
+  </div>
+ </div>
+ <div class="grid g3" style="margin-top:18px">
+   <div class="card"><div class="feat"><div class="fi">⚓</div><div><b>Do porto à entrega</b><br><span class="note">Terminal, break bulk, transferências e fretamento numa visão só.</span></div></div></div>
+   <div class="card"><div class="feat"><div class="fi">⏱️</div><div><b>Tempo real</b><br><span class="note">Ocupação, dwell time e OTIF sem esperar o relatório.</span></div></div></div>
+   <div class="card"><div class="feat"><div class="fi">🔗</div><div><b>Microsoft 365</b><br><span class="note">Alertas no Teams; nada de planilha solta.</span></div></div></div>
+ </div>`;
+}
+function app2(){
+ setTimeout(()=>{C('a2g',{type:'doughnut',data:{datasets:[{data:[92,8],backgroundColor:['#1fae6a','#e2ecec'],borderWidth:0,circumference:270,rotation:225}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});},40);
+ return `<span class="dashtag">EXPERIÊNCIA · Portal do cliente (embarcador/importador)</span>
+ <p class="lead">Área do cliente (em Power Pages): <b>rastreio de contêiner/carga, status no terminal, agendamento, documentos e faturas</b> em tempo real. Ao lado, um <b>cockpit</b> da carga e a <b>linha do tempo</b> da chegada à liberação. Menos ligações e e-mails de status.</p>
+ <div class="applay">
+  ${phone('Import. Atlântico','Cliente · contrato #204',
+    `<div class="grid g2" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+       <div class="kpi" style="padding:12px"><div class="lab">Contêineres ativos</div><div class="val" style="font-size:20px">18</div></div>
+       <div class="kpi" style="padding:12px"><div class="lab">No prazo</div><div class="val" style="font-size:20px;-webkit-text-fill-color:initial;background:none;color:var(--ok)">92%</div></div>
+     </div>
+     <div class="mini"><div class="row"><div class="mt">CTNR MSCU-7741 · 40 HC</div><span class="badge b-info">Armazenado</span></div><div class="ms">pátio Bloco B · dwell 3 dias · aguarda desembaraço</div></div>
+     <div class="mini"><div class="row"><div class="mt">Carga break bulk · bobinas</div><span class="badge b-warn">Em descarga</span></div><div class="ms">navio no berço · 62%</div></div>
+     <div class="btn acc full">📅 Agendar retirada (gate-out)</div>`,
+    `<div class="on"><span class="d">📦</span>Cargas</div><div><span class="d">🗓️</span>Agenda</div><div><span class="d">📄</span>Docs</div><div><span class="d">💳</span>Faturas</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Cockpit da carga</h3><div class="sub">Importadora Atlântico · contrato #204</div>
+      <div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">
+        <div class="gauge"><canvas id="a2g"></canvas><div class="lbl"><b>92%</b><span>no prazo</span></div></div>
+        <div style="flex:1;min-width:180px">
+          <div class="statrow"><span><span class="sd" style="background:var(--navy-600)"></span>Contêineres ativos</span><b>18</b></div>
+          <div class="statrow"><span><span class="sd" style="background:var(--warn)"></span>Dwell médio</span><b>3,1 dias</b></div>
+          <div class="statrow"><span><span class="sd" style="background:var(--ok)"></span>Liberados (mês)</span><b>142</b></div>
+          <div class="statrow" style="border:none"><span><span class="sd" style="background:var(--green)"></span>Documentos OK</span><b>100%</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><h3>Rastreio · CTNR MSCU-7741</h3><div class="sub">da chegada à liberação</div>
+      <div class="tline"><div class="base"></div><div class="fillb" style="width:60%"></div>
+        <div class="tnode" style="left:8%"><div class="pin" style="background:var(--ok)"></div><div class="dd">D-3</div><div class="cap">Descarga navio</div></div>
+        <div class="tnode" style="left:34%"><div class="pin" style="background:var(--ok)"></div><div class="dd">D-3</div><div class="cap">Gate-in</div></div>
+        <div class="tnode" style="left:60%"><div class="pin" style="background:var(--warn)"></div><div class="dd">Hoje</div><div class="cap">Armazenado<br>aguarda desemb.</div></div>
+        <div class="tnode" style="left:86%"><div class="pin" style="background:var(--blue-400)"></div><div class="dd">D+1</div><div class="cap">Gate-out (prev.)</div></div>
+      </div>
+    </div>
+  </div>
+ </div>
+ <div class="callout" style="margin-top:18px">💡 Rastreio e agendamento self-service reduzem o custo de atendimento, evitam dwell time desnecessário e melhoram a experiência do embarcador.</div>`;
+}
+function app3(){
+ return `<span class="dashtag">EXPERIÊNCIA · Motorista & operação de campo</span>
+ <p class="lead">App do motorista e operador: <b>check-in no terminal, ordem de movimentação/transporte, checklist de veículo, conferência e foto de avaria</b>, mesmo offline no pátio. E a <b>jornada da operação</b> em etapas. Tira a papelada do gate e agiliza o fluxo.</p>
+ <div class="applay">
+  ${phone('Ordem OM-3320','Motorista · placa QDX-1A20',
+    `<div class="mini"><div class="row"><div class="mt">Transferência · terminal → CD cliente</div><span class="badge b-info">Em rota</span></div><div class="ms">CTNR TCLU-8890 · janela 13:30 · 42 km</div></div>
+     <div class="mini"><div class="mt">Checklist de saída (gate)</div>
+       <div class="chk"><div class="box c">✓</div>Lacre conferido</div>
+       <div class="chk"><div class="box c">✓</div>Amarração / peação</div>
+       <div class="chk"><div class="box x">✕</div>Avaria — amassado na porta</div>
+       <div class="chk"><div class="box">&nbsp;</div>Documentos (CT-e / MDF-e)</div></div>
+     <div class="btn acc full">📷 Registrar avaria</div>`,
+    `<div class="on"><span class="d">🚛</span>Ordem</div><div><span class="d">📋</span>Checklist</div><div><span class="d">📷</span>Avaria</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Jornada da OM-3320</h3><div class="sub">da liberação à entrega</div>
+      <div class="stepper">
+        <div class="snode fdone"><div class="cir done">✓</div><div class="stx">Liberado</div><div class="ssub">terminal</div></div>
+        <div class="snode fdone"><div class="cir done">✓</div><div class="stx">Gate-out</div><div class="ssub">conferência</div></div>
+        <div class="snode"><div class="cir act">3</div><div class="stx">Em rota</div><div class="ssub">42 km</div></div>
+        <div class="snode"><div class="cir pend">4</div><div class="stx">Entrega</div><div class="ssub">janela 13:30</div></div>
+        <div class="snode"><div class="cir pend">5</div><div class="stx">Canhoto</div><div class="ssub">previsto</div></div>
+      </div>
+      <div class="progress" style="margin-top:16px"><i style="width:55%"></i></div>
+      <div class="note" style="margin-top:8px">55% concluído · chegada estimada dentro da janela do cliente.</div>
+    </div>
+    <div class="card"><h3>O que segura a operação hoje</h3><div class="sub">gate, pátio e frota</div>
+      <table><thead><tr><th>Ordem</th><th>Tipo</th><th>Recurso</th><th>Status</th></tr></thead><tbody>
+        <tr><td>OM-3320</td><td>Transferência</td><td>Cavalo QDX-1A20</td><td><span class="badge b-info">Em rota</span></td></tr>
+        <tr><td>OP-118</td><td>Break bulk</td><td>Guindaste 2</td><td><span class="badge b-warn">Fila navio</span></td></tr>
+        <tr><td>GT-902</td><td>Gate-in</td><td>Balança 1</td><td><span class="badge b-bad">Fila 22 min</span></td></tr>
+        <tr><td>FR-45</td><td>Fretamento</td><td>Ônibus 07</td><td><span class="badge b-ok">No ponto</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+ </div>`;
+}
+function app4(){
+ const days=[1,1,1,1,1,0,1,1,1,1,1,1,1,2];
+ const streak=days.map(d=>`<i class="${d===1?'on':d===2?'on today':''}"></i>`).join('');
+ return `<span class="dashtag">EXPERIÊNCIA · Capacitação gamificada</span>
+ <p class="lead">Microlearning para operadores, motoristas e equipe do terminal: trilhas de <b>NR-11 (empilhadeira/movimentação), NR-12, segurança portuária, peação de carga e direção defensiva</b>, com mecânica de jogo (XP, sequência, conquistas e ranking). Padroniza o procedimento, reforça a segurança e acelera a integração.</p>
+ <div class="applay">
+  ${phone('Deep Academy','Olá, Rafael 👋 · 4 trilhas ativas',
+    `<div class="mini"><div class="row"><div class="mt">NR-11 · Movimentação de Cargas</div><span class="ms">78%</span></div><div class="progress" style="margin-top:7px"><i style="width:78%"></i></div></div>
+     <div class="mini"><div class="row"><div class="mt">Segurança Portuária</div><span class="ms">52%</span></div><div class="progress" style="margin-top:7px"><i style="width:52%"></i></div></div>
+     <div class="mini"><div class="row"><div class="mt">Direção Defensiva</div><span class="ms">100%</span></div><div class="progress" style="margin-top:7px"><i style="width:100%;background:var(--ok)"></i></div></div>
+     <div class="callout" style="margin-top:4px">🔥 Sequência de 12 dias de estudo</div>`,
+    `<div class="on"><span class="d">🎓</span>Trilhas</div><div><span class="d">▶️</span>Aulas</div><div><span class="d">🏅</span>Certif.</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Seu progresso</h3><div class="sub">nível, XP e sequência de estudo</div>
+      <div class="xpwrap"><div class="lvl"><b>7</b><span>NÍVEL</span></div>
+        <div style="flex:1"><div class="row" style="font-size:12px;font-weight:600"><span>2.240 XP</span><span class="note">faltam 760 p/ nível 8</span></div>
+          <div class="xpbar"><i style="width:75%"></i></div></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;margin-top:14px">🔥 Sequência atual — 12 dias</div>
+      <div class="streak">${streak}</div>
+    </div>
+    <div class="grid g2" style="gap:18px">
+      <div class="card"><h3>Conquistas</h3><div class="sub">8 de 12 desbloqueadas</div>
+        <div class="badgewall">
+          <div class="bdg"><div class="ic">🥇</div><div class="bn">1ª trilha</div></div>
+          <div class="bdg"><div class="ic">🔥</div><div class="bn">Sequência 7d</div></div>
+          <div class="bdg"><div class="ic">🏗️</div><div class="bn">NR-11</div></div>
+          <div class="bdg"><div class="ic">⚓</div><div class="bn">Portuária</div></div>
+          <div class="bdg"><div class="ic">🚛</div><div class="bn">Direção</div></div>
+          <div class="bdg"><div class="ic">🪢</div><div class="bn">Peação</div></div>
+          <div class="bdg lock"><div class="ic">💎</div><div class="bn">Nível 10</div></div>
+          <div class="bdg lock"><div class="ic">👑</div><div class="bn">Top 1</div></div>
+        </div>
+      </div>
+      <div class="card"><h3>Ranking da equipe</h3><div class="sub">Operação · jun</div>
+        <div class="leader">
+          <div class="lr"><span class="rk g">1</span>Carla M.<span class="pts">2.880 XP</span></div>
+          <div class="lr"><span class="rk">2</span>João P.<span class="pts">2.520 XP</span></div>
+          <div class="lr me"><span class="rk">3</span>Você (Rafael)<span class="pts">2.240 XP</span></div>
+          <div class="lr"><span class="rk">4</span>Bruno S.<span class="pts">2.040 XP</span></div>
+          <div class="lr"><span class="rk">5</span>Aline F.<span class="pts">1.820 XP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>`;
+}
+function app5(){
+ return `<span class="dashtag">EXPERIÊNCIA · Conferência de avaria com IA</span>
+ <p class="lead">Na chegada/saída de contêineres e cargas, a IA analisa as fotos e <b>detecta avarias</b> (amassados, furos, lacre violado, oxidação) automaticamente — registrando evidência com data e local antes de liberar. Reduz disputa de avaria e protege a Deep e o cliente.</p>
+ <div class="applay">
+  ${phone('Conferência por IA','CTNR TCLU-8890 · gate-out',
+    `<div style="background:linear-gradient(135deg,#052833,#0e4a52);border-radius:14px;height:150px;position:relative;margin-bottom:12px;overflow:hidden">
+        <div style="position:absolute;top:28px;left:38px;width:66px;height:44px;border:2px solid #ef4d57;border-radius:6px"></div>
+        <div style="position:absolute;top:16px;left:40px;font-size:10px;color:#ffb3b0">amassado 0.93</div>
+        <div style="position:absolute;bottom:24px;right:34px;width:48px;height:34px;border:2px solid #f5a524;border-radius:6px"></div>
+        <div style="position:absolute;bottom:60px;right:34px;font-size:10px;color:#ffd79a">lacre 0.74</div>
+        <div style="position:absolute;bottom:6px;left:10px;font-size:11px;color:#8ad9df">ctnr_8890.jpg</div></div>
+     <div class="mini"><div class="row"><div class="mt">🔴 Amassado · porta direita</div><span class="badge b-bad">93%</span></div><div class="ms">registrar na EIR · foto anexada</div></div>
+     <div class="mini"><div class="row"><div class="mt">🟠 Lacre — verificar número</div><span class="badge b-warn">74%</span></div><div class="ms">conferir com o BL</div></div>`,
+    `<div class="on"><span class="d">🤖</span>Análise</div><div><span class="d">🗂️</span>Fila</div><div><span class="d">📈</span>Histórico</div><div><span class="d">👤</span>Perfil</div>`)}
+  <div class="stack">
+    <div class="card"><h3>Estúdio de conferência</h3><div class="sub">CTNR TCLU-8890 · EIR · IA Damage-Vision v3</div>
+      <div class="detview"><div class="gridb"></div>
+        <div class="bbox" style="left:13%;top:28%;width:26%;height:34%;border-color:#ef4d57"><span class="bl" style="background:#ef4d57;color:#fff">amassado · 0.93</span></div>
+        <div class="bbox" style="left:62%;top:52%;width:20%;height:26%;border-color:#f5a524"><span class="bl" style="background:#f5a524">lacre · 0.74</span></div>
+        <div class="bbox" style="left:44%;top:18%;width:14%;height:16%;border-color:#1fae6a"><span class="bl" style="background:#1fae6a;color:#fff">estrutura OK · 0.96</span></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="confrow"><span class="cn">Amassado (porta)</span><div class="confbar"><i style="width:93%;background:#ef4d57"></i></div><span class="cv">93%</span></div>
+        <div class="confrow"><span class="cn">Lacre / violação</span><div class="confbar"><i style="width:74%;background:#f5a524"></i></div><span class="cv">74%</span></div>
+        <div class="confrow"><span class="cn">Oxidação / furo</span><div class="confbar"><i style="width:58%;background:#f5a524"></i></div><span class="cv">58%</span></div>
+      </div>
+    </div>
+    <div class="card"><h3>Pipeline de processamento</h3><div class="sub">contêineres e cargas · conferência automática</div>
+      <div class="pipe">
+        <div class="pstep"><div class="pi">📷</div><div class="pn">Foto no gate</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🧹</div><div class="pn">Normaliza</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🧠</div><div class="pn">Modelo IA</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🏷️</div><div class="pn">Registra EIR</div></div><span class="parr">➜</span>
+        <div class="pstep"><div class="pi">🗂️</div><div class="pn">Fila conferente</div></div>
+      </div>
+      <div class="callout" style="margin:14px 0 0">⚡ <b>1.860 contêineres</b> liberados automaticamente · <b>74</b> sinalizados — o conferente foca em ~4% e protege a Deep de disputa de avaria.</div>
+    </div>
+  </div>
+ </div>
+ <div class="disc">* Caixas de detecção e percentuais são ilustrativos para a demonstração do conceito.</div>`;
+}
+
+/* ================= DASH 1 — TERMINAL OCUPAÇÃO ================= */
+function dash1(){
+ const setores=['Bloco A · cheios','Bloco B · vazios','Reefer (frigo)','Break Bulk','Alfandegado','Perigosos (IMO)'];
+ const dias=['Seg','Ter','Qua','Qui','Sex'];
+ const data=[ [3,4,3,4,4],[1,2,1,2,1],[1,1,2,2,1],[2,3,2,1,2],[2,2,3,3,2],[1,1,2,1,1] ];
+ const cls=['c0','c1','c2','c3','c4'];
+ let rows=`<div class="hrow"><div></div>${dias.map(n=>`<div class="hh">${n}</div>`).join('')}</div>`;
+ setores.forEach((p,i)=>{rows+=`<div class="hrow"><div class="hl">${p}</div>${data[i].map(v=>{const pct=['—','58','72','90','97'][v];return `<div class="cell ${cls[v]}">${pct}%</div>`;}).join('')}</div>`;});
+ const r3=(v,c,nm)=>`<div class="ring"><div class="circ" style="background:conic-gradient(${c} ${v*3.6}deg,#e2ecec 0)"><b>${v}%</b></div><div class="nm">${nm}</div></div>`;
+ setTimeout(()=>{
+  C('d1g',{type:'doughnut',data:{datasets:[{data:[84,16],backgroundColor:['#f5a524','#e2ecec'],borderWidth:0,circumference:270,rotation:225}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Heatmap de ocupação do pátio</span>
+  <p class="lead">Ocupação do terminal retroportuário <b>em tempo real</b>, com mapa de calor por setor e dia, indicadores de fluxo e medidor global. Antecipa congestionamento no gate e no pátio — antes de virar fila e demurrage.</p>
+  <div class="grid" style="grid-template-columns:300px 1fr;gap:18px">
+    <div class="stack">
+      <div class="card" style="text-align:center"><h3>Ocupação do pátio</h3><div class="sub">capacidade total</div>
+        <div class="gauge"><canvas id="d1g"></canvas><div class="lbl"><b>84%</b><span>ideal &lt; 85%</span></div></div>
+      </div>
+      ${kpi('Movimentações/dia','1.240','gate-in + gate-out','flat')}
+      ${kpi('Dwell time médio','3,1 dias','▼ de 3,8 dias','up')}
+    </div>
+    <div class="card"><h3>Heatmap · setor × dia</h3><div class="sub">ocupação (%) por área do pátio</div>
+      <div class="heat">${rows}</div>
+      <div class="heatleg"><span><span class="sw c2"></span>&lt;60% folga</span><span><span class="sw c1"></span>60–80% ideal</span><span><span class="sw c3"></span>85–95% alta</span><span><span class="sw c4"></span>&gt;95% lotado</span></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+   <div class="card"><h3>Fluxo do terminal</h3><div class="sub">agendamento × gate × liberação</div>
+     <div class="minirings">${r3(91,'#177f88','No agendam.')}${r3(84,'#1f9fb0','Ocupação')}${r3(96,'#2fb457','Docs OK')}</div>
+     <div class="note" style="margin-top:14px;text-align:center">91% dos caminhões chegam <b style="color:var(--green)">dentro da janela</b> agendada.</div>
+   </div>
+   <div class="card"><h3>Setores em alerta</h3><div class="sub">foco de gestão de pátio</div>
+     <table><thead><tr><th>Setor</th><th>Ocupação</th><th>Dwell</th><th>Causa</th><th>Status</th></tr></thead><tbody>
+       <tr><td>Bloco A · cheios</td><td>97%</td><td>4,2 d</td><td>Aguardando desembaraço</td><td><span class="badge b-bad">Lotado</span></td></tr>
+       <tr><td>Alfandegado</td><td>90%</td><td>5,0 d</td><td>Fila de liberação</td><td><span class="badge b-warn">Alta</span></td></tr>
+       <tr><td>Break Bulk</td><td>72%</td><td>—</td><td>Descarga de navio</td><td><span class="badge b-info">Operando</span></td></tr>
+       <tr><td>Bloco B · vazios</td><td>58%</td><td>—</td><td>—</td><td><span class="badge b-ok">Folga</span></td></tr>
+     </tbody></table>
+   </div>
+  </div>`;
+}
+
+/* ================= DASH 2 — FLUXO DE CARGAS ================= */
+function dash2(){
+ const stages=[['Agendado',640,'#8ad9df'],['Gate-in',520,'#3cbcc9'],['Armazenado',430,'#1f9fb0'],['Liberado (desemb.)',300,'#177f88'],['Gate-out',280,'#0c4f5c']];
+ const max=640;
+ const fun=stages.map(s=>{const w=42+(s[1]/max)*58;return `<div class="fstage" style="width:${w}%;background:linear-gradient(135deg,${s[2]},${s[2]}cc)"><span><small>${s[0]}</small></span><b>${s[1]}</b></div>`;}).join('');
+ setTimeout(()=>{
+  C('d2c',{type:'bar',data:{labels:['Gate-in','Conferência','Armazenagem','Desembaraço','Gate-out','Transferência'],datasets:[{label:'Tempo médio (h)',data:[0.4,0.6,74,52,0.5,3.2],backgroundColor:(c)=>{const x=c.chart.ctx,g=x.createLinearGradient(0,0,c.chart.width,0);g.addColorStop(0,'#2fb457');g.addColorStop(1,'#1f9fb0');return g;},borderRadius:6,barThickness:18}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Funil do fluxo de cargas</span>
+  <p class="lead">O ciclo da carga como um <b>funil</b> — do agendamento ao gate-out — com o tempo médio por etapa e o gargalo do desembaraço. Dá previsibilidade ao cliente e reduz dwell time e demurrage.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('Cargas no ciclo','640','contêineres + break bulk','flat')}
+   ${kpi('Tempo de ciclo médio','5,4 dias','▼ de 6,2 dias','up')}
+   ${kpi('No prazo (OTIF)','96,4%','▲ 2 p.p.','up')}
+   ${kpi('Demurrage evitada','R$ 180 mil','no mês','up')}
+  </div>
+  <div class="grid" style="grid-template-columns:1.05fr 1fr;gap:18px">
+    <div class="card"><h3>Funil do fluxo de cargas (semana)</h3><div class="sub">do agendamento ao gate-out</div>
+      <div class="funnel">${fun}</div>
+      <div class="note" style="margin-top:10px">Maior espera na <b>armazenagem/desembaraço</b> — dependência de liberação alfandegária.</div>
+    </div>
+    <div class="card"><h3>Tempo por etapa</h3><div class="sub">horas · gargalo em destaque</div><div class="chartbox"><canvas id="d2c"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Cargas em risco (dwell / demurrage)</h3><div class="sub">foco de operação e cliente</div>
+    <table><thead><tr><th>Carga</th><th>Cliente</th><th>Etapa</th><th>Dwell</th><th>Status</th></tr></thead><tbody>
+      <tr><td>MSCU-7741</td><td>Import. Atlântico</td><td>Aguardando desembaraço</td><td>4,2 d</td><td><span class="badge b-bad">Risco demurrage</span></td></tr>
+      <tr><td>Bobinas · navio Vega</td><td>Metal Sul</td><td>Break bulk · descarga</td><td>—</td><td><span class="badge b-warn">Operando</span></td></tr>
+      <tr><td>TCLU-8890</td><td>Comex Brasil</td><td>Liberado</td><td>2,0 d</td><td><span class="badge b-info">Gate-out hoje</span></td></tr>
+      <tr><td>PONU-3321</td><td>Import. Atlântico</td><td>Gate-in</td><td>0,5 d</td><td><span class="badge b-ok">No prazo</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 3 — FROTA & TRANSFERÊNCIAS ================= */
+function dash3(){
+ const card=(c,t,m,who,foot)=>`<div class="kcard ${c}"><div class="kt">${t}</div><div class="km">${m}</div><div class="kf"><span>${foot}</span><span class="av">${who}</span></div></div>`;
+ return `<span class="dashtag">VISUALIZAÇÃO · Kanban de frota & transferências</span>
+  <p class="lead">Frota, transferências e fretamento como um <b>quadro Kanban ao vivo</b>: cada viagem/ordem percorre as colunas até a conclusão. O planejador equilibra a frota, protege a janela do cliente e acompanha o fretamento de pessoas.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('Viagens hoje','86','transferências + fretamento','flat')}
+   ${kpi('OTIF','96,4%','▲ 2 p.p.','up')}
+   ${kpi('Custo por km','R$ 4,10','▼ de R$ 4,45','up')}
+   ${kpi('Ociosidade da frota','8%','▼ melhorando','up')}
+  </div>
+  <div class="card"><h3>Operações do dia · frota</h3><div class="sub">arraste-e-solte (conceito) · 86 viagens</div>
+   <div class="kanban">
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#8ad9df"></span>Programada</span><span class="cnt">24</span></div>
+       ${card('','Transf. TCLU-8890','terminal → CD · 13:30','RL','janela')}
+       ${card('','Fretamento turno B','porto · 22:00','CA','48 pax')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#3cbcc9"></span>Carregando</span><span class="cnt">9</span></div>
+       ${card('wn','Transf. MSCU-7741','pátio Bloco B','ET','peação')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#1f9fb0"></span>Em rota</span><span class="cnt">18</span></div>
+       ${card('wn','OM-3320 · CD cliente','42 km · janela 13:30','RL','no prazo')}
+       ${card('','Fretamento turno A','trajeto porto','CA','—')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#f5a524"></span>Descarga/Entrega</span><span class="cnt">6</span></div>
+       ${card('','OM-3315 · Metal Sul','aguardando doca','ET','—')}
+     </div>
+     <div class="kcol"><div class="kh"><span><span class="kdot" style="background:#1fae6a"></span>Concluída</span><span class="cnt">29</span></div>
+       ${card('ok','OM-3300','canhoto OK','RL','✓')}
+     </div>
+   </div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Viagens em risco de atraso</h3><div class="sub">foco de planejamento</div>
+    <table><thead><tr><th>Ordem</th><th>Cliente</th><th>Janela</th><th>Causa</th><th>Status</th></tr></thead><tbody>
+      <tr><td>OM-3315</td><td>Metal Sul</td><td>14:00</td><td>Doca do cliente ocupada</td><td><span class="badge b-warn">Atenção</span></td></tr>
+      <tr><td>OM-3320</td><td>Import. Atlântico</td><td>13:30</td><td>—</td><td><span class="badge b-ok">No prazo</span></td></tr>
+      <tr><td>FR-45</td><td>Fretamento</td><td>22:00</td><td>Motorista em jornada</td><td><span class="badge b-info">Monitorar</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 4 — CUSTO & MARGEM ================= */
+function dash4(){
+ setTimeout(()=>{
+  C('d4w',{type:'bar',data:{labels:['Receita','Mão de obra','Equipamentos','Armazenagem','Frota','Margem'],datasets:[{
+    data:[[0,100],[66,100],[56,66],[48,56],[40,48],[0,40]],
+    backgroundColor:['#1f9fb0','#ef4d57','#f5a524','#f5a524','#f5a524','#2fb457'],borderRadius:4}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'índice '+c.raw[0]+'→'+c.raw[1]}}},scales:{x:{grid:{display:false}},y:{title:{display:true,text:'índice (receita=100)'}}}}});
+  C('d4mix',{type:'doughnut',data:{labels:['Terminal retroportuário','Operações portuárias','Logística integrada','Fretamento','Customizadas'],datasets:[{data:[34,24,20,14,8],backgroundColor:['#177f88','#1f9fb0','#3cbcc9','#2fb457','#8ad9df'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'66%',plugins:{legend:{position:'bottom'}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Waterfall de margem + mix por serviço</span>
+  <p class="lead">Da receita ao resultado em <b>cascata (waterfall)</b>, com a margem e o mix de receita por serviço. Mostra como mão de obra, equipamentos, armazenagem e frota formam o custo — e qual serviço puxa o resultado.</p>
+  <div class="grid g4" style="margin-bottom:18px">
+   ${kpi('Margem de contribuição','40,1%','▲ 0,9 p.p.','up')}
+   ${kpi('Custo de frota','16% da receita','combustível/manut.','down')}
+   ${kpi('Serviço + rentável','Terminal','margem 44%','flat')}
+   ${kpi('Serviço a melhorar','Fretamento','margem 28%','down')}
+  </div>
+  <div class="grid g2">
+   <div class="card"><h3>Da receita ao resultado</h3><div class="sub">composição do custo (índice)</div><div class="chartbox"><canvas id="d4w"></canvas></div></div>
+   <div class="card"><h3>Mix de receita por serviço</h3><div class="sub">participação % do portfólio</div><div class="chartbox donutwrap"><canvas id="d4mix"></canvas><div class="donutctr" style="bottom:42px"><b style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">R$ 12,8 mi</b><span>receita/mês</span></div></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Rentabilidade por serviço</h3><div class="sub">receita, margem e tendência</div>
+    <table><thead><tr><th>Serviço</th><th>Receita (mês)</th><th>Margem</th><th>Mix</th><th>Status</th></tr></thead><tbody>
+      <tr><td>Terminal retroportuário</td><td>R$ 4,4 mi</td><td>44%</td><td>34%</td><td><span class="badge b-ok">Destaque</span></td></tr>
+      <tr><td>Operações portuárias (break bulk)</td><td>R$ 3,1 mi</td><td>39%</td><td>24%</td><td><span class="badge b-ok">Estável</span></td></tr>
+      <tr><td>Logística integrada</td><td>R$ 2,6 mi</td><td>36%</td><td>20%</td><td><span class="badge b-ok">Crescendo</span></td></tr>
+      <tr><td>Fretamento</td><td>R$ 1,8 mi</td><td>28%</td><td>14%</td><td><span class="badge b-warn">Melhorar</span></td></tr>
+      <tr><td>Soluções customizadas</td><td>R$ 0,9 mi</td><td>34%</td><td>8%</td><td><span class="badge b-info">Sob medida</span></td></tr>
+    </tbody></table>
+  </div>`;
+}
+
+/* ================= DASH 5 — EXECUTIVO & SGI ================= */
+function dash5(){
+ const ring=(v,color,nm,suf,dl,dcls)=>`<div class="ring"><div class="circ" style="background:conic-gradient(${color} ${v*3.6}deg,#e2ecec 0)"><b>${v}${suf}</b></div><div class="nm">${nm}</div><div class="dl ${dcls}">${dl}</div></div>`;
+ const sb=(arr)=>`<div class="spark">${arr.map(v=>`<i style="height:${v}%"></i>`).join('')}</div>`;
+ setTimeout(()=>{
+  C('d5rev',{type:'line',data:{labels:MES.slice(0,6),datasets:[{label:'Faturamento (R$ mi)',data:[10.8,11.2,11.6,12.0,12.4,12.8],borderColor:'#1f9fb0',backgroundColor:(c)=>{const x=c.chart.ctx,g=x.createLinearGradient(0,0,0,210);g.addColorStop(0,'rgba(47,180,87,.30)');g.addColorStop(1,'rgba(31,159,176,0)');return g;},fill:true,tension:.4,borderWidth:3,pointRadius:0,pointHoverRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}}});
+  C('d5b',{type:'line',data:{labels:['21','22','23','24','25','26'],datasets:[
+    {label:'OTIF %',data:[92,93,94,95,96,96.4],borderColor:'#1fae6a',tension:.35,borderWidth:3,pointRadius:0},
+    {label:'Taxa de acidentes (TF)',data:[2.6,2.0,1.6,1.2,0.9,0.6],borderColor:'#ef4d57',tension:.35,borderWidth:3,pointRadius:0,yAxisID:'y2'}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{y:{min:88,max:100},y2:{position:'right',grid:{drawOnChartArea:false}},x:{grid:{display:false}}}}});
+ },40);
+ return `<span class="dashtag">VISUALIZAÇÃO · Scorecard executivo & SGI/HSE</span>
+  <p class="lead">Visão de diretoria: os indicadores que sustentam a operação — produtividade portuária, OTIF, ocupação e segurança (HSE) — em anéis, com o faturamento consolidado e a evolução de OTIF × acidentes. Pronto para o comitê e para as auditorias do SGI/ISO.</p>
+  <div class="card"><h3>Indicadores estratégicos</h3><div class="sub">desempenho vs. meta</div>
+    <div class="rings">
+      ${ring(96,'#1f9fb0','OTIF','%','meta 95% ✓','up')}
+      ${ring(84,'#177f88','Ocupação','%','ideal &lt;85%','up')}
+      ${ring(88,'#2fb457','Produtiv. porto','%','t/h vs. meta','up')}
+      ${ring(97,'#0c4f5c','Segurança (HSE)','%','▲ índice','up')}
+    </div>
+  </div>
+  <div class="grid g4" style="margin:18px 0">
+   ${kpi('Faturamento (mês)','R$ 12,8 mi','▲ 11% YoY','up')}
+   ${kpi('Contêineres/mês','9.400','gate-in + out','up')}
+   ${kpi('Movimentação break bulk','142 mil t','▲ no ano','up')}
+   ${kpi('Dias sem acidente','198','recorde da unidade','up')}
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Faturamento consolidado</h3><div class="sub">evolução semestral (R$ mi)</div><div class="chartbox sm"><canvas id="d5rev"></canvas></div></div>
+    <div class="card"><h3>OTIF × Segurança</h3><div class="sub">OTIF sobe, acidentes caem</div><div class="chartbox sm"><canvas id="d5b"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Scorecard por área</h3><div class="sub">desempenho e mini-tendência (6 meses)</div>
+   <table class="scoretab"><thead><tr><th>Área</th><th>Indicador</th><th>Atual</th><th>Meta</th><th>Tendência</th><th>Status</th></tr></thead><tbody>
+     <tr><td>Terminal</td><td>Ocupação do pátio</td><td>84%</td><td>85%</td><td>${sb([70,74,78,80,82,84])}</td><td><span class="trend-up">▲ no alvo</span></td></tr>
+     <tr><td>Portuária</td><td>Produtividade (t/h)</td><td>88%</td><td>90%</td><td>${sb([72,76,80,82,85,88])}</td><td><span class="trend-up">▲ perto</span></td></tr>
+     <tr><td>Frota</td><td>OTIF</td><td>96,4%</td><td>95%</td><td>${sb([84,86,88,90,94,96])}</td><td><span class="trend-up">▲ acima</span></td></tr>
+     <tr><td>Controladoria</td><td>Margem</td><td>40,1%</td><td>38%</td><td>${sb([72,74,76,80,82,86])}</td><td><span class="trend-up">▲ acima</span></td></tr>
+     <tr><td>SGI/HSE</td><td>Taxa de acidentes</td><td>0,6</td><td>1,0</td><td>${sb([100,84,68,52,40,30])}</td><td><span class="trend-up">▲ recorde</span></td></tr>
+   </tbody></table>
+  </div>`;
+}
+
+/* ================= POWER PLATFORM ================= */
+function archDiagram(){
+ return `<div class="card"><h3>Arquitetura integrada — Microsoft Power Platform</h3><div class="sub">tudo no Dataverse e no Microsoft 365 que a Deep já usa</div>
+  <div class="flow">
+    <div class="step"><div class="si">📱</div><div class="sn">Power Apps</div><div class="sd">Terminal & operação</div></div>
+    <div class="arrow">➜</div>
+    <div class="step" style="border-color:var(--green);box-shadow:0 0 0 2px var(--ring)"><div class="si">🗄️</div><div class="sn">Dataverse</div><div class="sd">Base única governada</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">⚡</div><div class="sn">Power Automate</div><div class="sd">Relatórios · alertas · agenda</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">📊</div><div class="sn">Power BI</div><div class="sd">5 painéis</div></div>
+  </div>
+  <div class="flow" style="margin-top:14px">
+    <div class="step"><div class="si">🌐</div><div class="sn">Power Pages</div><div class="sd">Portal do cliente</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">💬</div><div class="sn">Copilot Studio</div><div class="sd">Copiloto de operações</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">🟦</div><div class="sn">Microsoft 365</div><div class="sd">Teams · SharePoint · Outlook</div></div>
+    <div class="arrow">➜</div>
+    <div class="step"><div class="si">🔐</div><div class="sn">Entra ID</div><div class="sd">Segurança & governança</div></div>
+  </div>
+  <div class="archlegend"><span><span class="dot" style="background:var(--green)"></span>Base de dados</span><span><span class="dot" style="background:var(--blue-500)"></span>Aplicação & automação</span><span><span class="dot" style="background:var(--blue-300)"></span>Experiência</span><span>Fontes: TOS/terminal (websag) · ERP · telemetria da frota · WMS · gate/OCR</span></div>
+ </div>`;
+}
+function pp1(){
+ return `<p class="lead">App canvas no <b>Power Apps</b> sobre o Dataverse para <b>check-in no terminal, ordem de movimentação e conferência</b> no pátio e no gate — inclusive offline. Substitui a papelada, agiliza o fluxo e alimenta os painéis em tempo real.</p>
+  <div class="grid g2">
+   <div class="card"><h3>Tela do app (Power Apps)</h3><div class="sub">operação de terminal · tablet/mobile no gate</div>
+     <div style="background:#f5faf9;border:1px solid var(--line);border-radius:14px;padding:14px">
+       <div class="row" style="margin-bottom:10px"><b style="font-size:13px">🚛 Check-in · OM-3320</b><span class="badge b-info">Gate-in</span></div>
+       <div class="mini"><div class="row"><div class="mt">Contêiner / Carga</div><span class="ms">TCLU-8890 · 40 HC</span></div></div>
+       <div class="mini"><div class="row"><div class="mt">Conferência de avaria</div><span class="ms">2/3</span></div><div class="progress" style="margin-top:7px"><i style="width:66%"></i></div></div>
+       <div class="mini"><div class="mt">Fotos / EIR</div><div class="row" style="margin-top:6px;justify-content:flex-start;gap:8px"><div style="width:48px;height:40px;background:linear-gradient(135deg,#052833,#0c4f5c);border-radius:7px"></div><div style="width:48px;height:40px;background:#d8efe9;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--navy-600);font-weight:700">＋</div></div></div>
+       <div class="btn acc full" style="margin-top:8px">Confirmar → Dataverse</div>
+     </div>
+   </div>
+   <div class="card stack"><h3>Por que Power Apps</h3>
+     <div class="feat"><div class="fi">💳</div><div><b>Custo baixo</b><br><span class="note">Aproveita o licenciamento Microsoft 365 já existente.</span></div></div>
+     <div class="feat"><div class="fi">📴</div><div><b>Offline nativo</b><br><span class="note">Funciona no pátio/gate sem depender de rede e sincroniza.</span></div></div>
+     <div class="feat"><div class="fi">📷</div><div><b>Conferência na origem</b><div class="note">Avaria, lacre e EIR registrados com foto, data e local.</div></div></div>
+     <div class="feat"><div class="fi">🧩</div><div><b>Conectores prontos</b><br><span class="note">TOS, ERP, telemetria, SharePoint e +900 conectores.</span></div></div>
+   </div>
+  </div>
+  <div style="margin-top:18px">${archDiagram()}</div>`;
+}
+function pp2(){
+ return `<p class="lead">Fluxo no <b>Power Automate</b> que gera o <b>relatório operacional</b> — movimentações, produtividade, dwell time, OTIF e faturamento — coletando do TOS/terminal e da frota, com aprovação e envio ao cliente. Acaba com a consolidação manual em planilha.</p>
+  <div class="card"><h3>Fluxo: relatório operacional</h3><div class="sub">por operação / contrato</div>
+   <div class="flow">
+     <div class="step"><div class="si">🔄</div><div class="sn">Coleta</div><div class="sd">TOS · frota · ERP</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🧮</div><div class="sn">Calcula</div><div class="sd">Movim. · dwell · OTIF</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">📄</div><div class="sn">Gera PDF</div><div class="sd">Template + gráficos</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🖊️</div><div class="sn">Aprovação</div><div class="sd">Coordenação (Teams)</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">📧</div><div class="sn">Envia</div><div class="sd">Cliente + portal</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Aprovação no Teams</h3><div class="sub">card adaptativo</div>
+      <div style="background:#f5faf9;border:1px solid var(--line);border-radius:14px;padding:14px">
+        <b style="font-size:13px">📄 Relatório operacional · Import. Atlântico · Mai</b>
+        <div class="note" style="margin:8px 0">142 liberações · dwell 3,1 d · OTIF 96% · faturamento R$ 1,2 mi</div>
+        <div class="row"><span class="btn acc" style="flex:1;margin-right:6px">Aprovar e enviar</span><span class="btn" style="flex:1;background:linear-gradient(135deg,#ef4d57,#cf2436)">Revisar</span></div>
+      </div>
+    </div>
+    <div class="card stack"><h3>Ganhos</h3>
+      <div class="feat"><div class="fi">⏱️</div><div><b>Horas, não dias</b> para fechar o relatório por cliente.</div></div>
+      <div class="feat"><div class="fi">📐</div><div><b>Padronização</b> de dwell, OTIF e produtividade entre contratos.</div></div>
+      <div class="feat"><div class="fi">🔎</div><div><b>Rastreabilidade</b> para o SGI e auditorias ISO.</div></div>
+    </div>
+  </div>`;
+}
+function pp3(){
+ return `<p class="lead">Robôs no <b>Power Automate</b> que <b>alertam sobre dwell time alto, risco de demurrage, janela de agendamento estourada, avaria e atraso de navio</b> — em tempo real, direto no Teams, com abertura de tarefa. Protege prazo, receita e a relação com o cliente.</p>
+  <div class="card"><h3>Fluxo: alertas de operação</h3><div class="sub">monitoramento contínuo</div>
+   <div class="flow">
+     <div class="step"><div class="si">📡</div><div class="sn">Evento</div><div class="sd">TOS · telemetria · gate</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🔍</div><div class="sn">Avalia</div><div class="sd">Dwell · janela · avaria</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🧾</div><div class="sn">Tarefa</div><div class="sd">Atribui responsável</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🔔</div><div class="sn">Notifica</div><div class="sd">Operação + cliente</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Alerta gerado</h3><div class="sub">exemplo · em tempo real</div>
+      <div class="callout" style="margin:0">🔔 <b>Riscos na operação</b><br>• CTNR MSCU-7741: dwell <b>4,2 dias</b> — risco de demurrage<br>• 28 caminhões fora da janela de agendamento hoje<br>• Avaria registrada no gate-out do TCLU-8890<br><span class="note">Tarefas atribuídas a: Pátio, Comercial e Qualidade</span></div>
+    </div>
+    <div class="card stack"><h3>Impacto</h3>
+      <div class="feat"><div class="fi">💸</div><div><b>Menos demurrage</b> e dwell desnecessário.</div></div>
+      <div class="feat"><div class="fi">⏱️</div><div><b>Gate mais fluido</b> com controle de janelas.</div></div>
+      <div class="feat"><div class="fi">🛡️</div><div><b>Avaria documentada</b> reduz disputa com o cliente.</div></div>
+    </div>
+  </div>`;
+}
+function pp4(){
+ return `<p class="lead">Fluxo no <b>Power Automate</b> para o <b>agendamento e janelas do terminal</b>: integra ao sistema de agendamento (websag), confirma janelas às transportadoras, reagenda em conflito e notifica atrasos. Reduz fila no gate e espera de caminhão.</p>
+  <div class="card"><h3>Fluxo: agendamento & janelas do terminal</h3><div class="sub">do pedido de janela ao gate-in</div>
+   <div class="flow">
+     <div class="step"><div class="si">🗓️</div><div class="sn">Solicitação</div><div class="sd">Transportadora (websag)</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🧠</div><div class="sn">Aloca janela</div><div class="sd">Capacidade do gate</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">✅</div><div class="sn">Confirma</div><div class="sd">SMS / e-mail</div></div>
+     <div class="arrow">➜</div>
+     <div class="step"><div class="si">🔔</div><div class="sn">Lembrete</div><div class="sd">Atraso / reagenda</div></div>
+   </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Confirmação gerada</h3><div class="sub">exemplo</div>
+      <div class="callout" style="margin:0">📅 <b>Janela confirmada · Transportadora Rota Sul</b><br>Gate-in: hoje <b>13:30–14:00</b> · CTNR TCLU-8890<br>⚠️ Pátio Bloco A quase cheio — chegue na janela para evitar fila<br><span class="note">Reagendamento automático em caso de conflito.</span></div>
+    </div>
+    <div class="card stack"><h3>Impacto</h3>
+      <div class="feat"><div class="fi">🚦</div><div><b>Menos fila</b> e espera de caminhão no gate.</div></div>
+      <div class="feat"><div class="fi">📈</div><div><b>Gate mais produtivo</b> com janelas equilibradas.</div></div>
+      <div class="feat"><div class="fi">🤝</div><div><b>Transportadora informada</b> automaticamente.</div></div>
+    </div>
+  </div>`;
+}
+function pp5(){
+ return `<p class="lead">Agente no <b>Copilot Studio</b> (no Teams) que responde sobre ocupação do pátio, cargas, dwell time, OTIF e faturamento — consultando os dados da operação em linguagem natural, com governança por cliente e por permissão do usuário.</p>
+  <div class="grid g2">
+   <div class="card"><h3>Copiloto de Operações</h3><div class="sub">plugado no Dataverse + Power BI + TOS</div>
+     <div style="background:#f5faf9;border:1px solid var(--line);border-radius:14px;padding:14px;font-size:13px">
+       <div style="text-align:right;margin-bottom:10px"><span style="display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--blue-500));color:#fff;padding:9px 13px;border-radius:14px 14px 3px 14px;max-width:82%">Quais contêineres estão com risco de demurrage?</span></div>
+       <div style="margin-bottom:12px"><span style="display:inline-block;background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:14px 14px 14px 3px;max-width:86%">Há <b>3 contêineres</b> com dwell acima de 4 dias — o MSCU-7741 (Import. Atlântico) é o mais crítico, aguardando desembaraço. Quer que eu avise o comercial e abra uma tarefa?</span></div>
+       <div style="text-align:right;margin-bottom:10px"><span style="display:inline-block;background:linear-gradient(135deg,var(--navy-700),var(--blue-500));color:#fff;padding:9px 13px;border-radius:14px 14px 3px 14px">Como está a ocupação do pátio agora?</span></div>
+       <div><span style="display:inline-block;background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:14px 14px 14px 3px;max-width:86%">A ocupação total está em <b>84%</b>, mas o <b>Bloco A</b> está em 96% (risco de congestionamento). Recomendo priorizar liberações desse bloco. <span class="note">[fonte: painel Terminal]</span></span></div>
+     </div>
+   </div>
+   <div class="card stack"><h3>Capacidades</h3>
+     <div class="feat"><div class="fi">📊</div><div><b>Pergunta em linguagem natural</b> sobre pátio, cargas e OTIF.</div></div>
+     <div class="feat"><div class="fi">⚙️</div><div><b>Ações</b>: abre tarefa e dispara fluxos do Power Automate.</div></div>
+     <div class="feat"><div class="fi">🔐</div><div><b>Governança</b>: responde conforme o cliente e a permissão do usuário.</div></div>
+     <div class="feat"><div class="fi">🟦</div><div><b>Onde a equipe já está</b>: dentro do Teams.</div></div>
+   </div>
+  </div>
+  <div style="margin-top:18px">${archDiagram()}</div>`;
+}
+
+/* ================= HOME ================= */
+function home(){
+ return `<div class="hero">
+   <div style="display:inline-flex;align-items:center;gap:14px;margin-bottom:16px">
+     <span style="display:inline-flex;align-items:center"><svg width="176" height="56" viewBox="0 0 220 70" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dgh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2fb457"/><stop offset="1" stop-color="#1f9fb0"/></linearGradient></defs><circle cx="22" cy="34" r="11" fill="none" stroke="#2fb457" stroke-width="3.5"/><circle cx="22" cy="34" r="4.5" fill="#2fb457"/><rect x="33" y="30.5" width="16" height="7" rx="2" fill="#2fb457"/><text x="54" y="46" font-family="Manrope,Arial" font-weight="800" font-size="40" fill="url(#dgh)" letter-spacing="-1">DEEP</text><text x="56" y="61" font-family="Inter,Arial" font-weight="600" font-size="10" fill="#8ad9df" letter-spacing="5">LOGÍSTICA</text></svg></span>
+     <span style="font-size:12px;font-weight:600;color:#bcdcda;letter-spacing:.05em">TERMINAL · PORTUÁRIA · FROTA · OTIF · BI &amp; AUTOMAÇÃO</span>
+   </div>
+   <h1>Portfólio de Provas de Conceito — Deep Logística</h1>
+   <p>Sejam muito bem-vindos. Preparamos um conjunto de <b style="color:#fff">15 provas de conceito</b> sob medida para a Deep, organizadas em três frentes que conversam entre si numa única plataforma sobre o Microsoft 365: aplicativos, dashboards em Power BI e automações em Power Platform. Vamos navegar por cada uma para mostrar, na prática, como dar visão única do porto à entrega — destravando terminal e ocupação, fluxo de cargas, frota e OTIF, custo/margem e o SGI — saindo da planilha e com governança. Os números são ilustrativos, apenas para dar vida às demonstrações.</p>
+   <div class="chips"><span>📱 5 Aplicativos</span><span>📊 5 Dashboards</span><span>⚡ 5 Power Platform</span><span>🗄️ Base única: Dataverse</span></div>
+   <div class="certrow"><span class="cert">⚓ Itajaí/SC · retroportuário</span><span class="cert">📋 SGI / ISO</span><span class="cert">🌱 Pessoas · sustentabilidade</span></div>
+ </div>
+  <div class="card" style="margin-bottom:24px"><h3>Serviços da Deep Logística</h3><div class="sub">a mesma amplitude que vamos traduzir em dados e automação</div>
+    <div class="clientwall">
+      <div class="cwall"><span class="ce">🏗️</span>Terminal Retroportuário</div>
+      <div class="cwall"><span class="ce">⚓</span>Operações Portuárias</div>
+      <div class="cwall"><span class="ce">🔗</span>Logística Integrada</div>
+      <div class="cwall"><span class="ce">🚌</span>Fretamento</div>
+      <div class="cwall"><span class="ce">🎯</span>Soluções Customizadas</div>
+    </div>
+  </div>
+  <div class="grid g3">
+   <div class="card"><h3>📱 5 Aplicativos</h3><div class="sub">experiências mobile/portal</div><div class="note">Cockpit da diretoria (com mapa da operação), portal do cliente, operação em campo, Deep Academy e conferência de avaria com IA.</div></div>
+   <div class="card"><h3>📊 5 Dashboards (Power BI)</h3><div class="sub">cada um com uma visualização diferente</div><div class="note">Terminal & ocupação, fluxo de cargas, frota & transferências, custo & margem por serviço e o executivo com SGI/HSE.</div></div>
+   <div class="card"><h3>⚡ 5 Power Platform</h3><div class="sub">automação com governança</div><div class="note">Check-in de terminal, relatório operacional, alertas de operação, agendamento & janelas e o copiloto de operações.</div></div>
+  </div>
+  <div class="grid g4" style="margin-top:22px">
+   ${kpi('Serviços','5','porto à entrega','flat')}
+   ${kpi('POCs','15','navegáveis','flat')}
+   ${kpi('Base','Microsoft 365','que a Deep já usa','flat')}
+   ${kpi('Dados','Dataverse','fonte única governada','flat')}
+  </div>
+  <div style="margin-top:24px">${archDiagram()}</div>`;
+}
+
+/* ================= router ================= */
+const VIEWS={app1,app2,app3,app4,app5,dash1,dash2,dash3,dash4,dash5,pp1,pp2,pp3,pp4,pp5};
+function go(id){
+  destroyCharts();
+  const m=meta(id);
+  document.getElementById('crumb').textContent=m?m.crumb:'Início';
+  document.getElementById('title').textContent=m?(m.ico+' '+m.name):'Portfólio de POCs — Deep Logística';
+  document.getElementById('pocflag').textContent=m?'Prova de conceito':'15 provas de conceito';
+  const v=document.getElementById('view');
+  v.style.animation='none';void v.offsetWidth;v.style.animation='';
+  v.innerHTML=(VIEWS[id]||home)();
+  setActive(id);window.scrollTo(0,0);
+}
+buildNav();
+document.getElementById('view').innerHTML=home();
+</script>
+</body>
+</html>
